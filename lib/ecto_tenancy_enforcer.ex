@@ -24,4 +24,9 @@ defmodule EctoTenancyEnforcer do
   def enforce(%Ecto.Query{from: %{source: %{query: subquery}}}, config) do
     enforce(subquery, config)
   end
+
+  # skip `from x in values(...)`
+  def enforce(%Ecto.Query{from: %{source: {:values, _, _}}} = _query, _config) do
+    {:ok, :unenforced_schema}
+  end
 end
