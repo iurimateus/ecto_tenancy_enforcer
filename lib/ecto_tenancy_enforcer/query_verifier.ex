@@ -198,4 +198,8 @@ defmodule EctoTenancyEnforcer.QueryVerifier do
   defp parse_field({:coalesce, _, _}, _schema_context) do
     :coalesce_not_parsed
   end
+
+  defp parse_field({:json_extract_path, _, _}, _schema_context) do
+    :json_extract_path_not_parsed
+  end
 end
