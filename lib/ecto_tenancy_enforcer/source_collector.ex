@@ -31,7 +31,15 @@ defmodule EctoTenancyEnforcer.SourceCollector do
         case source do
           {var, association_name} ->
             source_mod = Enum.at(acc, var)
-            source_mod.__schema__(:association, association_name).related
+
+            case source_mod.__schema__(:association, association_name) do
+              %{related: related} ->
+                related
+
+              %Ecto.Association.HasThrough{through: [parent_assoc | _assocs]} ->
+                assoc_schema = source_mod.__schema__(:association, parent_assoc)
+                assoc_schema.related
+            end
 
           source_mod ->
             source_mod

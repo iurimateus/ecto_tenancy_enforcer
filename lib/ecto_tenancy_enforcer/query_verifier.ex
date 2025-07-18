@@ -63,7 +63,16 @@ defmodule EctoTenancyEnforcer.QueryVerifier do
   defp join_requires_tenancy?(%{assoc: {ix, name}}, schema_context) do
     case SchemaContext.source_by_index(schema_context, ix) do
       source_mod ->
-        assoc_mod = source_mod.__schema__(:association, name).related
+        assoc_mod =
+          case source_mod.__schema__(:association, name) do
+            %{related: related} ->
+              related
+
+            %Ecto.Association.HasThrough{through: [parent_assoc | _assocs]} ->
+              assoc_schema = source_mod.__schema__(:association, parent_assoc)
+              assoc_schema.related
+          end
+
         Enum.all?([source_mod, assoc_mod], &SchemaContext.tenancy_enforced?(schema_context, &1))
     end
   end
