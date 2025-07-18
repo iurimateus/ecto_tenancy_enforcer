@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :ecto_tenancy_enforcer,
   ecto_repos: [Tenancy.Repo]
